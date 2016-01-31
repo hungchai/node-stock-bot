@@ -1,7 +1,6 @@
 var config = require('./config/config.json');
 var mongoose = require('mongoose');
 var MongoClient = require('mongodb').MongoClient;
-var mongoose = require('mongoose');
 var co = require('co');
 var NodeCache = require("node-cache");
 var marketAPI = require('stock-market-api'),
@@ -13,8 +12,8 @@ var stockQuotesArrayCache = new NodeCache({
     stdTTL: 5760,
     checkperiod: 120
 });
-
-var stock_schema = require('./Schema');
+var StockSchema = require('./stockSchema');
+var stockSchema = new StockSchema(mongoose);
 
 try {
     var mongoURI = config.mongoDbConn;
@@ -22,9 +21,9 @@ try {
 catch (err) {
     var mongoURI = config.mongoDbConn;
 }
-var programLogModel = mongoose.model('ProgramLog');
+var programLogModel = stockSchema.ProgramLog;
 var nodestockbotLog = new programLogModel({appName: 'node-stock-bot', beginDateTime: new Date()});
-nodestockbotLog.ipAddress = ipAddress["eth0"][0]['address'];
+//nodestockbotLog.ipAddress = ipAddress["eth0"][0]['address'];
 
 var symbol = '00700:HK';
 mongoose.connect(mongoURI);
@@ -34,9 +33,10 @@ mongoose.connection.on("open", function(err) {
                     stockQuotesArrayCache.get( 'stockQuotesArray',  function( err, value ){
                       if( !err ){
                         if(value == undefined){
-                            var StockQuotesArrayModel = mongoose.model("StockQuotesArray");
-                            // stockQuotesArray = yield StockQuotesArrayModel.findBySymbol(symbol);
-                            // stockQuotesArrayCache.set('stockQuotesArray',stockQuotesArray)
+                            var StockQuotesArrayModel = stockSchema.StockQuotesArray;
+                            StockQuotesArrayModel.findBySymbol(symbol)(function callback(err,result){
+                                stockQuotesArrayCache.set('stockQuotesArray',result);
+                            });
                         }else{
                           stockQuotesArray = value;
                         }
