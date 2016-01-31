@@ -28,30 +28,35 @@ var nodestockbotLog = new programLogModel({appName: 'node-stock-bot', beginDateT
 var symbol = '00700:HK';
 mongoose.connect(mongoURI);
 
-//var loadStockQuotesArrayCache = function()
-//{
-//    return
-//
-//}
+var fillAndLoadStockQuotesArrayCache = function()
+{
+    return function(callback)
+    {
+        stockQuotesArrayCache.get( 'stockQuotesArray',  function ( err, value ){
+            if(!err ){
+                if(value == undefined){
+                    var StockQuotesArrayModel = stockSchema.StockQuotesArray;
+                    StockQuotesArrayModel.findBySymbol(symbol)(function callback(err,result){
+                        stockQuotesArrayCache.set('stockQuotesArray',result);
+                        callback(err,result)
+                    });
+
+                }else{
+                    callback(err,value);
+                }
+            }else
+            {
+                callback(err,value);
+            }
+        });
+    }
+
+};
 
 mongoose.connection.on("open", function(err) {
                 co(function*() {
-                    var stockQuotesArray = {};
-                    stockQuotesArrayCache.get( 'stockQuotesArray',  function ( err, value ){
-                      if( !err ){
-                        if(value == undefined){
-                            var StockQuotesArrayModel = stockSchema.StockQuotesArray;
-                            var result = yield StockQuotesArrayModel.findBySymbol(symbol);
-                            stockQuotesArrayCache.set('stockQuotesArray',result);
+                    var stockQuotesArray = yield fillAndLoadStockQuotesArrayCache();
 
-                            //StockQuotesArrayModel.findBySymbol(symbol)(function callback(err,result){
-                            //    stockQuotesArrayCache.set('stockQuotesArray',result);
-                            //});
-                        }else{
-                          stockQuotesArray = value;
-                        }
-                      }
-                    });
                     
                     var currentQuote = yield hkejApi.getstockTodayQuoteList(symbol);
                  
