@@ -36,7 +36,7 @@ var fillAndLoadStockQuotesArrayCache = function()
             if(!err ){
                 if(value == undefined){
                     var StockQuotesArrayModel = stockSchema.StockQuotesArray;
-                    StockQuotesArrayModel.findBySymbol(symbol)(function callback(err,result){
+                    StockQuotesArrayModel.findBySymbol(symbol)(function (err,result){
                         stockQuotesArrayCache.set('stockQuotesArray',result);
                         callback(err,result)
                     });
