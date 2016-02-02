@@ -22,31 +22,39 @@ catch (err) {
     var mongoURI = config.mongoDbConn;
 }
 var programLogModel = stockSchema.ProgramLog;
-var nodestockbotLog = new programLogModel({appName: 'node-stock-bot', beginDateTime: new Date()});
+var nodestockbotLog = new programLogModel({
+    appName: 'node-stock-bot',
+    beginDateTime: new Date()
+});
 //nodestockbotLog.ipAddress = ipAddress["eth0"][0]['address'];
 
 var symbol = '00700:HK';
 mongoose.connect(mongoURI);
 
-var fillAndLoadStockQuotesArrayCache = function()
-{
-    return function(callback)
-    {
-        stockQuotesArrayCache.get( 'stockQuotesArray',  function ( err, value ){
-            if(!err ){
-                if(value == undefined){
+var fillAndLoadStockQuotesArrayCache = function() {
+    return function(callback) {
+        stockQuotesArrayCache.get('stockQuotesArray', function(err, value) {
+            if (!err) {
+                if (value == undefined) {
                     var StockQuotesArrayModel = stockSchema.StockQuotesArray;
-                    StockQuotesArrayModel.findBySymbol(symbol)(function (err,result){
-                        stockQuotesArrayCache.set('stockQuotesArray',result);
-                        callback(err,result)
+                    StockQuotesArrayModel.findBySymbol(symbol)(function(err, result) {
+                        stockQuotesArrayCache.set('stockQuotesArray', result,
+                            function(err, success) {
+                                if (!err && success) {
+                                    callback(err, result)
+                                }
+                            }
+                        );
+
                     });
 
-                }else{
-                    callback(err,value);
                 }
-            }else
-            {
-                callback(err,value);
+                else {
+                    callback(err, value);
+                }
+            }
+            else {
+                callback(err, value);
             }
         });
     }
@@ -54,21 +62,31 @@ var fillAndLoadStockQuotesArrayCache = function()
 };
 
 mongoose.connection.on("open", function(err) {
-                co(function*() {
-                    var stockQuotesArray = yield fillAndLoadStockQuotesArrayCache();
+    co(function*() {
+        var stockQuotesArray = yield fillAndLoadStockQuotesArrayCache();
+        if (process.env.NODE_ENV === "development")
+           // console.log(JSON.stringify(stockQuotesArray));
 
-                    
-                    var currentQuote = yield hkejApi.getstockTodayQuoteList(symbol);
-                 
+        var currentQuote = yield hkejApi.getstockTodayQuoteList(symbol);
+        if (process.env.NODE_ENV === "development")
+            console.log(JSON.stringify(currentQuote));
+         
+         stockQuotesArray.opens.push(currentQuote.Open);   
+         stockQuotesArray.lows.push(currentQuote.Low);
+          stockQuotesArray.highs.push(currentQuote.High);
+          stockQuotesArray.volumes.push(currentQuote.Volume);
+          stockQuotesArray.turnovers.push(currentQuote.Turnover);
+           stockQuotesArray.dates.push(currentQuote.Date);
+  console.log(JSON.stringify(stockQuotesArray.lows));
 
-                }).then(function(result) {
+    }).then(function(result) {
 
-                }).catch(function(err, result) {
+    }).catch(function(err) {
+        console.log(err);
+    });
 
-                });
 
-  
-    
+
 });
 // var interval = setInterval(function(str1, str2) {
 //     console.log(str1 + " " + str2);
