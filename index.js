@@ -65,19 +65,19 @@ mongoose.connection.on("open", function(err) {
     co(function*() {
         var stockQuotesArray = yield fillAndLoadStockQuotesArrayCache();
         if (process.env.NODE_ENV === "development")
-           // console.log(JSON.stringify(stockQuotesArray));
+        // console.log(JSON.stringify(stockQuotesArray));
 
-        var currentQuote = yield hkejApi.getstockTodayQuoteList(symbol);
+            var currentQuote = yield hkejApi.getstockTodayQuoteList(symbol);
         if (process.env.NODE_ENV === "development")
             console.log(JSON.stringify(currentQuote));
-         
-         stockQuotesArray.opens.push(currentQuote.Open);   
-         stockQuotesArray.lows.push(currentQuote.Low);
-          stockQuotesArray.highs.push(currentQuote.High);
-          stockQuotesArray.volumes.push(currentQuote.Volume);
-          stockQuotesArray.turnovers.push(currentQuote.Turnover);
-           stockQuotesArray.dates.push(currentQuote.Date);
-  console.log(JSON.stringify(stockQuotesArray.lows));
+
+        stockQuotesArray.opens.push(currentQuote.Open);
+        stockQuotesArray.lows.push(currentQuote.Low);
+        stockQuotesArray.highs.push(currentQuote.High);
+        stockQuotesArray.volumes.push(currentQuote.Volume);
+        stockQuotesArray.turnovers.push(currentQuote.Turnover);
+        stockQuotesArray.dates.push(currentQuote.Date);
+        console.log(JSON.stringify(stockQuotesArray.lows));
 
     }).then(function(result) {
 
