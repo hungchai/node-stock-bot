@@ -29,6 +29,7 @@ var nodestockbotLog = new programLogModel({
 //nodestockbotLog.ipAddress = ipAddress["eth0"][0]['address'];
 
 var symbol = '00700:HK';
+var rulesJsPath = 'customRules_00700_EMA.js';
 mongoose.connect(mongoURI);
 
 var fillAndLoadStockQuotesArrayCache = function() {
@@ -65,11 +66,12 @@ mongoose.connection.on("open", function(err) {
     co(function*() {
         var stockQuotesArray = yield fillAndLoadStockQuotesArrayCache();
         if (process.env.NODE_ENV === "development")
-        // console.log(JSON.stringify(stockQuotesArray));
-
+        {
+            // console.log(JSON.stringify(stockQuotesArray));
+        }
             var currentQuote = yield hkejApi.getstockTodayQuoteList(symbol);
-        if (process.env.NODE_ENV === "development")
-            console.log(JSON.stringify(currentQuote));
+        if (process.env.NODE_ENV === "development"){
+            console.log(JSON.stringify(currentQuote));}
 
         stockQuotesArray.opens.push(currentQuote.Open);
         stockQuotesArray.lows.push(currentQuote.Low);
@@ -78,7 +80,9 @@ mongoose.connection.on("open", function(err) {
         stockQuotesArray.turnovers.push(currentQuote.Turnover);
         stockQuotesArray.dates.push(currentQuote.Date);
         console.log(JSON.stringify(stockQuotesArray.lows));
-
+        
+        
+        
     }).then(function(result) {
 
     }).catch(function(err) {
