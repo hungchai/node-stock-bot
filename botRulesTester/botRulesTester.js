@@ -11,6 +11,7 @@ class BotRulesTester {
         this.stockQuotesArray = stockQuotesArray;
         this.customRulesScript = customRulesScript;
         this.holdprice = entryPrice;
+        this.shares = shares;
         //console.log("TALib Version: " + talib.version);
     }
 
@@ -24,13 +25,12 @@ class BotRulesTester {
         var volumes = this.stockQuotesArray.volumes;
         var turnovers = this.stockQuotesArray.turnovers;
         var dates = this.stockQuotesArray.dates;
+        var holdprice = this.holdprice;
         //var holdprice = -1;
         var quotelength = closes.length;
         var buyrules = [];
         var sellrules = [];
         var customHeaders = [];
-        
-        let backtestResult = [];
 
         let customRulesScript = this.customRulesScript;
         return function (callback) {
@@ -45,8 +45,7 @@ class BotRulesTester {
 
                 var customRulesScriptReady = yield myFunction(talib, co, closes, highs, lows, opens, volumes, turnovers, dates, quotelength, buyrules, sellrules, customHeaders);
 
-                var idx = 0;
-                for (idx; idx < quotelength; idx++) {
+                var idx = quotelength - 1;
                     var dayResult = {};
                     dayResult.date = moment(dates[idx].toISOString()).tz("Asia/Hong_Kong").format('YYYY-MM-DD');
                     dayResult.close = closes[idx];
@@ -56,7 +55,9 @@ class BotRulesTester {
                     dayResult.volume = volumes[idx];
                     dayResult.turnover = turnovers[idx];
                     dayResult.holdprice = holdprice;
+                    dayResult.action="";
                     dayResult.profit = 0;
+
                     for (var buyruleName in buyrules) {
                         dayResult[buyruleName] = false;
                     }
@@ -72,9 +73,11 @@ class BotRulesTester {
                             holdprice = lows[idx]
                             dayResult.holdprice = holdprice;
                             dayResult[buyruleName] = true;
+                            dayResult.action = "buy";
                         }
                         else if (buyrules[buyruleName](idx, holdprice)) {
                             dayResult[buyruleName] = true;
+                            dayResult.action = "buy";
                         }
                     }
                     ;
@@ -82,18 +85,16 @@ class BotRulesTester {
                         if (holdprice > 0 && sellrules[sellruleName](idx, holdprice)) {
                             dayResult.profit = highs[idx] - holdprice;
                             dayResult[sellruleName] = true;
-                            holdprice = -1;
+                            dayResult.action = "sell";
+                            dayResult.holdprice = -1;
                             break;
                         }
                     }
                     ;
 
-                    backtestResult.push(dayResult);
-                    dayResult = null;
-                }
                 //end
 
-                return backtestResult;
+                return dayResult;
             })
                 .then(function (backtestResult) {
                     callback(null, backtestResult);

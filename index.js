@@ -1,19 +1,24 @@
+'use strict'
 var config = require('./config/config.json');
 var mongoose = require('mongoose');
 var MongoClient = require('mongodb').MongoClient;
 var co = require('co');
+var coFs = require('co-fs');
 var NodeCache = require("node-cache");
 var marketAPI = require('stock-market-api'),
     money18Api = marketAPI.money18Api,
     hkejApi = marketAPI.hkejApi;
 var os = require('os');
-var ipAddress = os.networkInterfaces();
+var StockSchema = require('./stockSchema');
+var stockSchema = new StockSchema(mongoose);
 var stockQuotesArrayCache = new NodeCache({
     stdTTL: 5760,
     checkperiod: 120
 });
-var StockSchema = require('./stockSchema');
-var stockSchema = new StockSchema(mongoose);
+var BotRulesTester = require('./botRulesTester');
+
+
+var ipAddress = os.networkInterfaces();
 
 try {
     var mongoURI = config.mongoDbConn;
@@ -64,12 +69,20 @@ var fillAndLoadStockQuotesArrayCache = function() {
 
 mongoose.connection.on("open", function(err) {
     co(function*() {
-        var stockQuotesArray = yield fillAndLoadStockQuotesArrayCache();
+        let stockQuotesArray = yield fillAndLoadStockQuotesArrayCache();
+        let customRulesScript = yield coFs.readFile(rulesJsPath, 'utf8');
+
+        //load current portfolio
+        let stockPortfolioModel = stockSchema.StockPortfolio;
+        let currentstockPortfolio = yield stockPortfolioModel.findOne({'symbol':symbol});
+
         if (process.env.NODE_ENV === "development")
         {
             // console.log(JSON.stringify(stockQuotesArray));
+            console.log(JSON.stringify(currentstockPortfolio));
         }
-            var currentQuote = yield hkejApi.getstockTodayQuoteList(symbol);
+        let currentQuote = yield hkejApi.getstockTodayQuoteList(symbol);
+
         if (process.env.NODE_ENV === "development"){
             console.log(JSON.stringify(currentQuote));}
 
@@ -80,9 +93,11 @@ mongoose.connection.on("open", function(err) {
         stockQuotesArray.turnovers.push(currentQuote.Turnover);
         stockQuotesArray.dates.push(currentQuote.Date);
         console.log(JSON.stringify(stockQuotesArray.lows));
-        
-        
-        
+
+
+        var botRulesTester = new BotRulesTester(-1, 100, stockQuotesArray,customRulesScript);
+        var result = yield botRulesTester.run();
+
     }).then(function(result) {
 
     }).catch(function(err) {
@@ -92,15 +107,5 @@ mongoose.connection.on("open", function(err) {
 
 
 });
-// var interval = setInterval(function(str1, str2) {
-//     console.log(str1 + " " + str2);
-// }, 1000, "Hello.", "How are you?");
-
-//clearInterval(interval);
 
 
-//  hkejApi.getstockTodayQuoteList('00700:HK')(function(err, result)
-// {
-//     console.log(result);
-// }
-// );
