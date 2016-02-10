@@ -97,9 +97,9 @@ mongoose.connection.on("open", function(err) {
 
         var botRulesTester = new BotRulesTester(-1, 100, stockQuotesArray,customRulesScript);
         var result = yield botRulesTester.run();
-
+        return result;
     }).then(function(result) {
-
+        console.log(JSON.stringify(result));
     }).catch(function(err) {
         console.log(err);
     });
