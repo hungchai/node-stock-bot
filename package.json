@@ -27,6 +27,7 @@
     "mongodb": "2.0.*",
     "mongoose": "^4.2.8",
     "node-cache": "^3.0.1",
+    "nodemailer": "^2.1.0",
     "stock-market-api": "file:marketAPI",
     "talib": "*",
     "thunkify": "^2.1.2",

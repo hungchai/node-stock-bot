@@ -15,12 +15,12 @@ function stockSchema(mongoose)
     stockPortfolioSchema(mongoose);
     stockTransactionHistSchema(mongoose);
     
-    this.ProgramLog = mongoose.model('ProgramLog');
-    this.StockProfile = mongoose.model('StockProfile');
-    this.StockDayQuote = mongoose.model('StockDayQuote');
-    this.StockQuotesArray = mongoose.model('StockQuotesArray');
-    this.StockPortfolio = mongoose.model('StockPortfolio');
-    this.StockTransactionHist = mongoose.model('StockTransactionHist');
+    this.constructor.prototype.ProgramLog = mongoose.model('ProgramLog');
+    this.constructor.prototype.StockProfile = mongoose.model('StockProfile');
+    this.constructor.prototype.StockDayQuote = mongoose.model('StockDayQuote');
+    this.constructor.prototype.StockQuotesArray = mongoose.model('StockQuotesArray');
+    this.constructor.prototype.StockPortfolio = mongoose.model('StockPortfolio');
+    this.constructor.prototype.StockTransactionHist = mongoose.model('StockTransactionHist');
 }
 
 module.exports = stockSchema;
