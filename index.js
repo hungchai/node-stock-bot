@@ -96,6 +96,11 @@ mongoose.connection.on("open", function(err) {
 
 
         var botRulesTester = new BotRulesTester(-1, 100, stockQuotesArray,customRulesScript);
+       
+        botRulesTester.on('finish', function *(message) {
+          console.log("I say: " + message);
+          return true;
+        });
         var result = yield botRulesTester.run();
         return result;
         
@@ -106,9 +111,6 @@ mongoose.connection.on("open", function(err) {
         console.log(err);
         process.exit(0);
     });
-
-
-
 });
 
 

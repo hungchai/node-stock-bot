@@ -1,1 +1,1 @@
-module.exports = require('./botRulesTester');
+module.exports = require('./BotRulesTester');

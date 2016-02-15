@@ -5,6 +5,9 @@ var thunkify = require('thunkify');
 var util = require('util');
 var _ = require("underscore");
 var moment = require('moment-timezone');
+var Emitter = require("co-emitter");
+var util         = require("util");
+var EventEmitter = require("events").EventEmitter;
 
 class BotRulesTester {
     constructor(entryPrice, shares, stockQuotesArray, customRulesScript) {
@@ -12,9 +15,9 @@ class BotRulesTester {
         this.customRulesScript = customRulesScript;
         this.holdprice = entryPrice;
         this.shares = shares;
+        Emitter(BotRulesTester.prototype);
         //console.log("TALib Version: " + talib.version);
     }
-
 
     run() {
         //Reserved variable names
@@ -31,7 +34,7 @@ class BotRulesTester {
         var buyrules = [];
         var sellrules = [];
         var customHeaders = [];
-
+        var self = this;
         let customRulesScript = this.customRulesScript;
         return function (callback) {
             co(function*() {
@@ -93,7 +96,8 @@ class BotRulesTester {
                     ;
 
                 //end
-
+                yield self.emit('finish', dayResult);
+                
                 return dayResult;
             })
                 .then(function (backtestResult) {
