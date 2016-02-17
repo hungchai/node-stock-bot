@@ -31,7 +31,7 @@ class NodeStockBot
        
         let stockQuotesArray =  yield self.fillAndLoadStockQuotesArrayCache();
         let currentQuote = yield hkejApi.getstockTodayQuoteList(self.symbol);
-        if (stockQuotesArray.dates[stockQuotesArray.length] < currentQuote.Date)
+        if (moment.tz(stockQuotesArray.dates[stockQuotesArray.dates.length-1], "Asia/Hong_Kong") <  moment.tz(currentQuote.date.substr(0, 10), "Asia/Hong_Kong"))
         {
             
             stockQuotesArray.opens.push(currentQuote.Open);
@@ -42,9 +42,16 @@ class NodeStockBot
             stockQuotesArray.dates.push(currentQuote.Date);
         }
         
-        yield self.readRulesScriptFile();
-        console.log(JSON.stringify(stockQuotesArray.lows));
-
+        var customRulesScript= yield self.readRulesScriptFile();
+        //console.log(JSON.stringify(stockQuotesArray.lows));
+        var botRulesTester = new BotRulesTester(-1, 100, stockQuotesArray,customRulesScript);
+       
+        botRulesTester.on('finish', function *(message) {
+          console.log("I say: " + message);
+          return true;
+        });
+        var result = yield botRulesTester.run();
+        
         return stockQuotesArray;
     }
     
@@ -83,6 +90,13 @@ class NodeStockBot
     }
 
 };
+    
+    * loadCurrentstockPortfolio(){
+                //load current portfolio
+        let stockPortfolioModel = stockSchema.StockPortfolio;
+        let currentstockPortfolio = yield stockPortfolioModel.findOne({'symbol':this.symbol});
+        return currentstockPortfolio;
+    }
 }
 
 module.exports = NodeStockBot;

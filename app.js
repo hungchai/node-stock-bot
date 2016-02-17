@@ -16,7 +16,7 @@ mongoose.connection.on('open', function() {
     co(function*() {
         var nodeStockBot = new NodeStockBot(symbol, shares, rulesJsPath, stockSchema);
         var a = yield nodeStockBot.invoke();
-
+        console.log(JSON.stringify(a));
     }).catch(function(err){
         console.error(err);
 
