@@ -31,18 +31,17 @@ class NodeStockBot
        
         let stockQuotesArray =  yield self.fillAndLoadStockQuotesArrayCache();
         let currentQuote = yield hkejApi.getstockTodayQuoteList(self.symbol);
-        let currentTime = moment(Date.now()).tz("Asia/Hong_Kong").toDate();
-        if (stockQuotesArray.dates[stockQuotesArray.length] == currentTime)
+        if (stockQuotesArray.dates[stockQuotesArray.length] < currentQuote.Date)
         {
             
+            stockQuotesArray.opens.push(currentQuote.Open);
+            stockQuotesArray.lows.push(currentQuote.Low);
+            stockQuotesArray.highs.push(currentQuote.High);
+            stockQuotesArray.volumes.push(currentQuote.Volume);
+            stockQuotesArray.turnovers.push(currentQuote.Turnover);
+            stockQuotesArray.dates.push(currentQuote.Date);
         }
-        stockQuotesArray.opens.push(currentQuote.Open);
-        stockQuotesArray.lows.push(currentQuote.Low);
-        stockQuotesArray.highs.push(currentQuote.High);
-        stockQuotesArray.volumes.push(currentQuote.Volume);
-        stockQuotesArray.turnovers.push(currentQuote.Turnover);
-        stockQuotesArray.dates.push(currentQuote.Date);
-          
+        
         yield self.readRulesScriptFile();
         console.log(JSON.stringify(stockQuotesArray.lows));
 
