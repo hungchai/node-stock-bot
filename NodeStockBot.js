@@ -50,10 +50,11 @@ class NodeStockBot
        
         var result = yield botRulesTester.run();
         
-        var finalbidprice = yield self.emit('finish', result);
-        
+        var aaa = yield self.emit('finish', result);
+
+        console.log(aaa);
         //insert to stockProfile Schema
-    
+
     }
     
     * readRulesScriptFile()
