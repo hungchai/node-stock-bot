@@ -15,7 +15,7 @@ class BotRulesTester {
         this.customRulesScript = customRulesScript;
         this.holdprice = entryPrice;
         this.shares = shares;
-        Emitter(BotRulesTester.prototype);
+
         //console.log("TALib Version: " + talib.version);
     }
 
@@ -94,10 +94,6 @@ class BotRulesTester {
                         }
                     }
                     ;
-
-                //end
-                yield self.emit('finish', dayResult);
-                
                 return dayResult;
             })
                 .then(function (backtestResult) {

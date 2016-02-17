@@ -5,6 +5,8 @@ var StockSchema = require('./stockSchema');
 var stockSchema = new StockSchema(mongoose);
 var co = require('co');
 
+//var defer = require('co-defer');
+
 var symbol = '00700:HK';
 var shares = '500';
 var rulesJsPath = 'customRules_00700_EMA.js';
@@ -15,9 +17,18 @@ mongoose.connect(mongoURI);
 mongoose.connection.on('open', function() {
     co(function*() {
         var nodeStockBot = new NodeStockBot(symbol, shares, rulesJsPath, stockSchema);
-        var a = yield nodeStockBot.invoke();
-        console.log(JSON.stringify(a));
-    }).catch(function(err){
+        nodeStockBot.on("finish", function(result) {
+            console.log(JSON.stringify(result));
+            return 'y';
+        });
+        var job = function *() {
+          console.log('Doing something...');
+          //throw new Error('Failure!!!');
+        };
+yield nodeStockBot.invoke();
+        //defer.setInterval(yield nodeStockBot.invoke(), 2000)
+        
+    }).catch(function(err) {
         console.error(err);
 
     })

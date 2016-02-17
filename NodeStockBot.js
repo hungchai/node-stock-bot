@@ -11,7 +11,7 @@ var marketAPI = require('stock-market-api'),
 var os = require('os');
 var moment = require('moment-timezone');
 var BotRulesTester = require('./botRulesTester');
-
+var Emitter = require("co-emitter");
 
 class NodeStockBot
 {
@@ -24,6 +24,8 @@ class NodeStockBot
             stdTTL: 5760,
             checkperiod: 3600
         });
+        
+        Emitter(NodeStockBot.prototype);
         
     }
     * invoke() {
@@ -46,13 +48,12 @@ class NodeStockBot
         //console.log(JSON.stringify(stockQuotesArray.lows));
         var botRulesTester = new BotRulesTester(-1, 100, stockQuotesArray,customRulesScript);
        
-        botRulesTester.on('finish', function *(message) {
-          console.log("I say: " + message);
-          return true;
-        });
         var result = yield botRulesTester.run();
         
-        return stockQuotesArray;
+        var finalbidprice = yield self.emit('finish', result);
+        
+        //insert to stockProfile Schema
+    
     }
     
     * readRulesScriptFile()

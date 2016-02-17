@@ -18,9 +18,11 @@
   "homepage": "https://github.com/hungchai/node-stock-bot#readme",
   "dependencies": {
     "co": "^4.6.0",
+    "co-defer": "^1.0.0",
     "co-emitter": "^0.2.3",
     "co-fs": "^1.2.0",
     "co-parallel": "^1.0.0",
+    "co-retry": "^1.0.5",
     "co-talib": "^1.0.0",
     "json2xls": "^0.0.5",
     "moment": "^2.10.6",
