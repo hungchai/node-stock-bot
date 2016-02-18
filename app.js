@@ -17,7 +17,7 @@ mongoose.connect(mongoURI);
 mongoose.connection.on('open', function() {
     var nodeStockBot = new NodeStockBot(symbol, shares, rulesJsPath, stockSchema);
     nodeStockBot.on("finish", function*(result) {
-        console.log('currentprice:' +result.close);
+        console.log('currenttime' + (new Date()).toISOString() + ' currentprice:' +result.close);
         if (result.action == "buy")
         {
             console.log("buy now!");
@@ -33,6 +33,5 @@ mongoose.connection.on('open', function() {
         
     }).catch(function(err) {
         console.error(err);
-
     })
 })
