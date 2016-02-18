@@ -62,7 +62,7 @@
                 };
                 
                 sellrules["win_2%"] = function(idx, holdprice) {
-                    if (((highs[idx] - holdprice) / holdprice) >= 0.02) {
+                    if (((closes[idx] - holdprice) / holdprice) >= 0.02) {
                         return true;
                     }
                     else {
@@ -70,7 +70,7 @@
                     }
                 };
                  sellrules["loss_1%"] = function(idx, holdprice) {
-                    if (((highs[idx] - holdprice) / holdprice) <= -0.01) {
+                    if (((closes[idx] - holdprice) / holdprice) <= -0.01) {
                         return true;
                     }
                     else {

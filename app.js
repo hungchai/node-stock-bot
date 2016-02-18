@@ -15,14 +15,21 @@ var mongoURI = config.mongoDbConn;
 mongoose.connect(mongoURI);
 
 mongoose.connection.on('open', function() {
+    var nodeStockBot = new NodeStockBot(symbol, shares, rulesJsPath, stockSchema);
+    nodeStockBot.on("finish", function*(result) {
+        console.log('currentprice:' +result.close);
+        if (result.action == "buy")
+        {
+            console.log("buy now!");
+        }
+        return true;
+    });
     co(function*() {
-        var nodeStockBot = new NodeStockBot(symbol, shares, rulesJsPath, stockSchema);
-        nodeStockBot.on("finish", function*(result) {
-            console.log(JSON.stringify(result));
-            return true;
-        });
-
-        defer.setInterval(function*(){yield nodeStockBot.invoke()}, 2000)
+    
+    //yield nodeStockBot.invoke();
+        defer.setInterval(function*(){
+            yield nodeStockBot.invoke();
+        }, 5000);
         
     }).catch(function(err) {
         console.error(err);
