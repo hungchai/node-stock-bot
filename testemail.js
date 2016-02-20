@@ -3,7 +3,7 @@ var nodemailer = require('nodemailer');
 var smtpoption={ 
     host: 'smtp.office365.com',
     port: '587',
-    auth: { user: 'tomma2-c@my.cityu.edu.hk', pass: 'C00ovujM' },
+    auth: { user: 'MQ441@hk66.cf', pass: 'Ppassword123' },
     secureConnection: 'false',
     tls: { ciphers: 'SSLv3' }
 };
@@ -12,7 +12,7 @@ var transporter = nodemailer.createTransport(smtpoption);
 
 // setup e-mail data with unicode symbols
 var mailOptions = {
-    from: 'hungchai08@hotmail.com', // sender address
+    from: 'MQ441@hk66.cf', // sender address
     to: 'hungchai08@yahoo.com.hk', // list of receivers
     subject: 'Hello ✔', // Subject line
     text: 'Hello world 🐴', // plaintext body
