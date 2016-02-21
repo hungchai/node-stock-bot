@@ -48,7 +48,7 @@ class NodeStockBot
         
         var customRulesScript= yield self.readRulesScriptFile();
         //console.log(JSON.stringify(stockQuotesArray.lows));
-        var botRulesTester = new BotRulesTester(currentStockPortfolio.entryPrice, 100, stockQuotesArray,customRulesScript);
+        var botRulesTester = new BotRulesTester(currentStockPortfolio == null? -1: currentStockPortfolio.entryPrice, 100, stockQuotesArray,customRulesScript);
        
         var botRulesTesterResult = yield botRulesTester.run();
         var entryPrice = yield self.emit('finish', botRulesTesterResult);
@@ -125,7 +125,7 @@ class NodeStockBot
     
     * loadCurrentstockPortfolio(){
                 //load current portfolio
-        let stockPortfolioModel = stockSchema.StockPortfolio;
+        let stockPortfolioModel = this.stockSchema.StockPortfolio;
         let currentstockPortfolio = yield stockPortfolioModel.findOne({'symbol':this.symbol});
         return currentstockPortfolio;
     }
