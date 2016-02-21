@@ -13,7 +13,7 @@ class BotRulesTester {
     constructor(entryPrice, shares, stockQuotesArray, customRulesScript) {
         this.stockQuotesArray = stockQuotesArray;
         this.customRulesScript = customRulesScript;
-        this.holdprice = entryPrice;
+        this.holdprice = (entryPrice == null) ? -1 : entryPrice  ;
         this.shares = shares;
 
         //console.log("TALib Version: " + talib.version);
