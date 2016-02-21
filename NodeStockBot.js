@@ -33,6 +33,8 @@ class NodeStockBot
        
         let stockQuotesArray =  yield self.fillAndLoadStockQuotesArrayCache();
         let currentQuote = yield hkejApi.getstockTodayQuoteList(self.symbol);
+        let currentStockPortfolio = yield self.loadCurrentstockPortfolio();
+
         if (moment.tz(stockQuotesArray.dates[stockQuotesArray.dates.length-1], "Asia/Hong_Kong") <  moment.tz(currentQuote.date.substr(0, 10), "Asia/Hong_Kong"))
         {
             stockQuotesArray.closes.push(currentQuote.Close);
@@ -46,7 +48,7 @@ class NodeStockBot
         
         var customRulesScript= yield self.readRulesScriptFile();
         //console.log(JSON.stringify(stockQuotesArray.lows));
-        var botRulesTester = new BotRulesTester(-1, 100, stockQuotesArray,customRulesScript);
+        var botRulesTester = new BotRulesTester(currentStockPortfolio.entryPrice, 100, stockQuotesArray,customRulesScript);
        
         var result = yield botRulesTester.run();
         var aaa = yield self.emit('finish', result);
