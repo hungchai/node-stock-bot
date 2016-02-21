@@ -3,3 +3,4 @@ node_modules/
 ta-lib/
 .idea/
 *.xlsx
+testemail.js

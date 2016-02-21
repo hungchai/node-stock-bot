@@ -33,6 +33,8 @@ class NodeStockBot
        
         let stockQuotesArray =  yield self.fillAndLoadStockQuotesArrayCache();
         let currentQuote = yield hkejApi.getstockTodayQuoteList(self.symbol);
+        let currentStockPortfolio = yield self.loadCurrentstockPortfolio();
+
         if (moment.tz(stockQuotesArray.dates[stockQuotesArray.dates.length-1], "Asia/Hong_Kong") <  moment.tz(currentQuote.date.substr(0, 10), "Asia/Hong_Kong"))
         {
             stockQuotesArray.closes.push(currentQuote.Close);
@@ -46,12 +48,43 @@ class NodeStockBot
         
         var customRulesScript= yield self.readRulesScriptFile();
         //console.log(JSON.stringify(stockQuotesArray.lows));
-        var botRulesTester = new BotRulesTester(-1, 100, stockQuotesArray,customRulesScript);
+        var botRulesTester = new BotRulesTester(currentStockPortfolio.entryPrice, 100, stockQuotesArray,customRulesScript);
        
-        var result = yield botRulesTester.run();
-        var aaa = yield self.emit('finish', result);
+        var botRulesTesterResult = yield botRulesTester.run();
+        var entryPrice = yield self.emit('finish', botRulesTesterResult);
+
         //insert to stockProfile Schema
-        stockQuotesArray = null;
+        if (botRulesTesterResult.action == 'buy')
+        {
+            //insert into StockPortfolio
+            var StockPortfolioModel = self.stockSchema.StockPortfolio;
+            var stockPortfolio = new StockPortfolioModel({
+                'symbol': self.symbol,
+                'bidDate': new Date(),
+                'shares': self.shares,
+                'entryPrice':bidPrice,
+            });
+            yield stockPortfolia.save();
+        }else if (botRulesTesterResult.action == 'sell')
+        {
+            var StockPortfolioModel = self.stockSchema.StockPortfolio;
+            yield StockPortfolioModel.findOneAndRemove({'symbol':self.symbol});
+        }
+
+        //insert log
+        if (botRulesTesterResult.action != '')
+        {
+            var StockTransactionHistModel = self.stockSchema.StockTransactionHist;
+            var stockTransactionHist = new StockTransactionHistModel({
+                'symbol': self.symbol,
+                'date': new Date(),
+                'shares': self.shares,
+                'price': bidPrice,
+                'action':botRulesTesterResult.action,
+                'remarks': botRulesTesterResult
+            });
+            yield stockTransactionHist.save();
+        }
     }
     
     * readRulesScriptFile()

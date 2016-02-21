@@ -5,7 +5,8 @@ module.exports = function (mongoose) {
         'date': Date,
         'shares': Number,
         'price':Number,
-        'action':String
+        'action':String,
+        'remarks': {}
     });
     
     stockTransactionHistSchema.index({ symbol: 1, date: 1}); // schema level, ensure index

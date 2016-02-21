@@ -39,9 +39,12 @@ mongoose.connection.on('open', function() {
         console.log('currenttime' + (new Date()).toISOString() + ' currentprice:' +result.close);
         if (result.action == "buy")
         {
-            console.log("buy now!");
+            return result.close;
+        }else if (result.action == "sell")
+        {
+            return result.close;
         }
-        return true;
+         return result.close;;
     });
     co(function*() {
     
