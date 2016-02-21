@@ -20,7 +20,7 @@ if (process.argv[2] != null)
 }
 if (process.argv[3] != null)
 {
-    shares = shares ;
+    shares = process.argv[3] ;
     console.log(shares);
 }
 if (process.argv[4] != null)
@@ -51,7 +51,7 @@ mongoose.connection.on('open', function() {
     //yield nodeStockBot.invoke();
         defer.setInterval(function*(){
             yield nodeStockBot.invoke();
-        }, 10000);
+        }, 50000);
         
     }).catch(function(err) {
         console.error(err);
