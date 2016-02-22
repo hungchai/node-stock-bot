@@ -46,7 +46,7 @@ mongoose.connection.on('open', function() {
             console.log('>>>'+result.action);
             return result.close;
         }
-         return result.close;;
+         return result.close;
     });
     co(function*() {
     
