@@ -8,7 +8,7 @@ var co = require('co');
 var defer = require('co-defer');
 
 var symbol = '00700:HK';
-var shares = '500';
+var shares = 100;
 var rulesJsPath = 'customRules_00700_EMA.js';
 
 
@@ -20,7 +20,7 @@ if (process.argv[2] != null)
 }
 if (process.argv[3] != null)
 {
-    shares = process.argv[3] ;
+    shares = parseInt(process.argv[3]) ;
     console.log(shares);
 }
 if (process.argv[4] != null)
@@ -39,9 +39,11 @@ mongoose.connection.on('open', function() {
         console.log('currenttime' + (new Date()).toISOString() + ' currentprice:' +result.close);
         if (result.action == "buy")
         {
+            console.log('>>>'+result.action);
             return result.close;
         }else if (result.action == "sell")
         {
+            console.log('>>>'+result.action);
             return result.close;
         }
          return result.close;;
