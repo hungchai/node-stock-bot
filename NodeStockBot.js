@@ -62,9 +62,10 @@ class NodeStockBot
                 'symbol': self.symbol,
                 'bidDate': new Date(),
                 'shares': self.shares,
-                'entryPrice':bidPrice,
+                'entryPrice':entryPrice,
             });
-            yield stockPortfolia.save();
+             yield stockPortfolio.save();
+            console.log("added to portfolio:"+JSON.stringify(stockPortfolio));
         }else if (botRulesTesterResult.action == 'sell')
         {
             var StockPortfolioModel = self.stockSchema.StockPortfolio;
@@ -79,7 +80,7 @@ class NodeStockBot
                 'symbol': self.symbol,
                 'date': new Date(),
                 'shares': self.shares,
-                'price': bidPrice,
+                'price': entryPrice,
                 'action':botRulesTesterResult.action,
                 'remarks': botRulesTesterResult
             });

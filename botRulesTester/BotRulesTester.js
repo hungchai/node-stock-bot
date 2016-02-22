@@ -80,7 +80,7 @@ class BotRulesTester {
                         }
                         else if (buyrules[buyruleName](idx, holdprice)) {
                             dayResult[buyruleName] = true;
-                            dayResult.action = "buy";
+                            dayResult.action = "";
                         }
                     }
                     ;
