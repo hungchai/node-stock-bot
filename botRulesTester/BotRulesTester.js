@@ -15,7 +15,6 @@ class BotRulesTester {
         this.customRulesScript = customRulesScript;
         this.holdprice = (entryPrice == null) ? -1 : entryPrice  ;
         this.shares = shares;
-
         //console.log("TALib Version: " + talib.version);
     }
 
@@ -86,10 +85,10 @@ class BotRulesTester {
                     ;
                     for (var sellruleName in sellrules) {
                         if (holdprice > 0 && sellrules[sellruleName](idx, holdprice)) {
-                            dayResult.profit = highs[idx] - holdprice;
+                            dayResult.profit = closes[idx] - holdprice;
                             dayResult[sellruleName] = true;
                             dayResult.action = "sell";
-                            dayResult.holdprice = -1;
+                            dayResult.holdprice = holdprice;
                             break;
                         }
                     }

@@ -69,8 +69,8 @@
                         return false;
                     }
                 };
-                 sellrules["loss_1%"] = function(idx, holdprice) {
-                    if (((closes[idx] - holdprice) / holdprice) <= -0.01) {
+                 sellrules["loss_2%"] = function(idx, holdprice) {
+                    if (((closes[idx] - holdprice) / holdprice) <= -0.02) {
                         return true;
                     }
                     else {

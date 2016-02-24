@@ -10,7 +10,7 @@ var defer = require('co-defer');
 var symbol = '00700:HK';
 var shares = 100;
 var rulesJsPath = 'customRules_00700_EMA.js';
-
+var moment = require('moment-timezone');
 
 
 if (process.argv[2] != null)
@@ -36,7 +36,7 @@ mongoose.connect(mongoURI);
 mongoose.connection.on('open', function() {
     var nodeStockBot = new NodeStockBot(symbol, shares, rulesJsPath, stockSchema);
     nodeStockBot.on("finish", function*(result) {
-        console.log('currenttime' + (new Date()).toISOString() + ' currentprice:' +result.close);
+        console.log('currenttime ' + moment.tz('Asia/Hong_Kong').format() + ' currentprice:' +result.close);
         if (result.action == "buy")
         {
             console.log('>>>'+result.action);
